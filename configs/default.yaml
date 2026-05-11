@@ -1,0 +1,37 @@
+video:
+  source: webcam
+  camera_index: 0
+  target_width: 960
+  target_height: 540
+  preserve_aspect_ratio: true
+
+face_mesh:
+  max_num_faces: 1
+  refine_landmarks: true
+  min_detection_confidence: 0.5
+  min_tracking_confidence: 0.5
+
+window:
+  seconds: 5.0
+  min_valid_frames_ratio: 0.60
+
+thresholds:
+  ear_closed: 0.21
+  mar_yawn: 0.60
+  perclos_attention: 0.25
+  perclos_fatigue: 0.40
+  long_blink_seconds: 0.70
+  yawn_min_seconds: 1.00
+  head_roll_warning_deg: 18.0
+  fatigue_score_attention: 35.0
+  fatigue_score_alarm: 65.0
+
+alert:
+  min_duration_seconds: 2.0
+  cooldown_seconds: 5.0
+  sound_enabled: true
+
+ui:
+  show_landmarks: true
+  show_fps: true
+  show_debug_panel: true
