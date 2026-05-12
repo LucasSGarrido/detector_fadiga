@@ -226,6 +226,11 @@ def _sidebar_processing_config() -> dict:
         max_value=0.40,
         value=float(config["thresholds"]["ear_closed"]),
         step=0.01,
+        help=(
+            "EAR significa Eye Aspect Ratio, uma razão que estima a abertura dos olhos. "
+            "Quando o EAR fica abaixo deste limite, o frame conta como olhos fechados. "
+            "Valores maiores deixam a detecção mais sensível; valores menores deixam mais conservadora."
+        ),
     )
     config["thresholds"]["perclos_fatigue"] = st.sidebar.slider(
         "PERCLOS fadiga",
@@ -233,6 +238,11 @@ def _sidebar_processing_config() -> dict:
         max_value=0.80,
         value=float(config["thresholds"]["perclos_fatigue"]),
         step=0.05,
+        help=(
+            "PERCLOS é a proporção de frames com olhos fechados dentro da janela de análise. "
+            "Se essa proporção passa deste limite, o sistema entende que há forte sinal de fadiga. "
+            "Valores menores alertam mais cedo; valores maiores exigem fechamento dos olhos por mais tempo."
+        ),
     )
     config["thresholds"]["fatigue_score_alarm"] = st.sidebar.slider(
         "Score fadiga",
@@ -240,6 +250,11 @@ def _sidebar_processing_config() -> dict:
         max_value=95.0,
         value=float(config["thresholds"]["fatigue_score_alarm"]),
         step=5.0,
+        help=(
+            "Score final de 0 a 100 que combina PERCLOS, olhos fechados, piscadas longas, bocejos, "
+            "inclinação da cabeça e qualidade da face detectada. Acima deste valor, o estado tende a "
+            "ser classificado como Fadiga quando o sinal persiste."
+        ),
     )
     return config
 
