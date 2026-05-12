@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import csv
+import math
+import shutil
+import subprocess
 import time
 from dataclasses import dataclass
 from datetime import datetime
@@ -133,10 +136,11 @@ def process_video(
                     )
                 )
 
+                video_frame = prepare_video_frame(processed.frame)
                 if save_video and writer is None:
-                    writer = build_writer(processed.frame, capture, paths["video"])
+                    writer = build_writer(video_frame, capture, paths["raw_video"])
                 if writer is not None:
-                    writer.write(processed.frame)
+                    writer.write(video_frame)
 
                 if not headless:
                     import cv2
@@ -161,7 +165,7 @@ def process_video(
     chart_paths: list[Path] = []
     report_json_path: Path | None = None
     report_md_path: Path | None = None
-    video_path = paths["video"] if save_video else None
+    video_path = finalize_browser_video(paths["raw_video"], paths["video"]) if save_video else None
 
     if write_report:
         paths["report_json"].parent.mkdir(parents=True, exist_ok=True)
@@ -254,9 +258,60 @@ def build_writer(frame, capture, path: Path):
 
     path.parent.mkdir(parents=True, exist_ok=True)
     height, width = frame.shape[:2]
-    fps = capture.get(cv2.CAP_PROP_FPS) or 30.0
+    fps = float(capture.get(cv2.CAP_PROP_FPS) or 30.0)
+    if not math.isfinite(fps) or fps <= 0:
+        fps = 30.0
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
     return cv2.VideoWriter(str(path), fourcc, fps, (width, height))
+
+
+def prepare_video_frame(frame):
+    height, width = frame.shape[:2]
+    even_height = height - (height % 2)
+    even_width = width - (width % 2)
+    if even_height <= 0 or even_width <= 0:
+        return frame
+    if even_height == height and even_width == width:
+        return frame
+
+    return frame[:even_height, :even_width]
+
+
+def finalize_browser_video(raw_path: Path, final_path: Path) -> Path | None:
+    if not raw_path.exists() or raw_path.stat().st_size == 0:
+        return None
+
+    try:
+        import imageio_ffmpeg
+
+        ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
+        command = [
+            ffmpeg,
+            "-y",
+            "-i",
+            str(raw_path),
+            "-an",
+            "-vf",
+            "scale=trunc(iw/2)*2:trunc(ih/2)*2,format=yuv420p",
+            "-c:v",
+            "libx264",
+            "-preset",
+            "veryfast",
+            "-crf",
+            "23",
+            "-movflags",
+            "+faststart",
+            str(final_path),
+        ]
+        result = subprocess.run(command, capture_output=True, text=True, check=False)
+        if result.returncode == 0 and final_path.exists() and final_path.stat().st_size > 0:
+            raw_path.unlink(missing_ok=True)
+            return final_path
+    except Exception:
+        pass
+
+    shutil.move(str(raw_path), str(final_path))
+    return final_path
 
 
 def resolve_timestamp_mode(source: str, mode: str) -> str:
@@ -331,6 +386,7 @@ def _session_paths(root: Path, session_id: str) -> dict[str, Path]:
     return {
         "log": root / "outputs" / "logs" / f"session_{session_id}.csv",
         "video": root / "outputs" / "videos" / f"session_{session_id}.mp4",
+        "raw_video": root / "outputs" / "videos" / f"session_{session_id}_raw.mp4",
         "report_json": root / "outputs" / "reports" / f"session_{session_id}.json",
         "report_md": root / "outputs" / "reports" / f"session_{session_id}.md",
         "charts": root / "outputs" / "charts",

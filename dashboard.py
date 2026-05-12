@@ -176,7 +176,7 @@ def _session_view(
         cols = st.columns([0.42, 0.58])
         with cols[0]:
             if video_path and video_path.exists():
-                st.video(str(video_path))
+                _video_player(video_path)
             else:
                 st.info("Nenhum vídeo processado associado a este log.")
         with cols[1]:
@@ -684,14 +684,27 @@ def _safe_filename(name: str) -> str:
 
 
 def _matching_video_path(log_path: Path | None) -> Path | None:
+    active_video = st.session_state.get("active_video_path")
+    if active_video and Path(active_video).exists():
+        return Path(active_video)
+
     if not log_path:
-        active_video = st.session_state.get("active_video_path")
-        if active_video:
-            return Path(active_video)
         return None
 
-    candidate = VIDEO_DIR / f"{log_path.stem}.mp4"
-    return candidate if candidate.exists() else None
+    for suffix in [".mp4", ".webm"]:
+        candidate = VIDEO_DIR / f"{log_path.stem}{suffix}"
+        if candidate.exists():
+            return candidate
+
+    return None
+
+
+def _video_player(path: Path) -> None:
+    mime = "video/webm" if path.suffix.lower() == ".webm" else "video/mp4"
+    try:
+        st.video(path.read_bytes(), format=mime)
+    except Exception:
+        st.video(str(path))
 
 
 def _matching_report_path(log_path: Path | None) -> Path | None:
@@ -712,7 +725,8 @@ def _session_artifacts(log_path: Path | None) -> list[tuple[str, Path, str]]:
     report_json_path = REPORT_DIR / f"{log_path.stem}.json"
 
     if video_path:
-        artifacts.append(("Vídeo processado", video_path, "video/mp4"))
+        mime = "video/webm" if video_path.suffix.lower() == ".webm" else "video/mp4"
+        artifacts.append(("Vídeo processado", video_path, mime))
     if report_md_path:
         artifacts.append(("Relatório Markdown", report_md_path, "text/markdown"))
     if report_json_path.exists():
