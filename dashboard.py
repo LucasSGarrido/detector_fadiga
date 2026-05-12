@@ -951,6 +951,34 @@ def _apply_theme() -> None:
             color: var(--text);
             letter-spacing: 0 !important;
         }
+        [data-testid="stTooltipHoverTarget"],
+        [data-testid="stTooltipHoverTarget"] *,
+        button[aria-label="Help"],
+        button[aria-label="Help"] *,
+        button[aria-label="help"],
+        button[aria-label="help"] * {
+            color: #000000 !important;
+            fill: #000000 !important;
+            stroke: #000000 !important;
+            opacity: 1 !important;
+        }
+        [data-baseweb="tooltip"],
+        [data-baseweb="tooltip"] *,
+        div[role="tooltip"],
+        div[role="tooltip"] *,
+        [data-testid="stTooltipContent"],
+        [data-testid="stTooltipContent"] * {
+            color: #ffffff !important;
+            fill: #ffffff !important;
+            stroke: #ffffff !important;
+        }
+        [data-baseweb="tooltip"],
+        div[role="tooltip"],
+        [data-testid="stTooltipContent"] {
+            background: #0b0f19 !important;
+            border: 1px solid rgba(255, 255, 255, 0.16) !important;
+            border-radius: 8px !important;
+        }
         h1 {
             font-size: 2rem !important;
             letter-spacing: 0 !important;
