@@ -62,7 +62,10 @@ def _video_mode() -> None:
     _sidebar_section("Vídeo", "Envie um arquivo para análise offline.")
     uploaded = st.sidebar.file_uploader("Arquivo de vídeo", type=VIDEO_TYPES, key="video_upload")
     if uploaded is not None:
+        _clear_previous_result_when_upload_changes(uploaded)
         _uploaded_file_card(uploaded)
+    else:
+        _clear_active_video_result()
     save_video = st.sidebar.checkbox("Salvar overlay", value=True)
     max_frames = st.sidebar.number_input("Limite de frames", min_value=0, value=0, step=100)
 
@@ -107,11 +110,7 @@ def _video_mode() -> None:
     if active_log and Path(active_log).exists():
         _session_view(load_log(active_log), Path(active_log), source_label="Sessão processada")
     else:
-        latest = latest_log(LOG_DIR)
-        if latest:
-            _session_view(load_log(latest), latest, source_label="Última sessão local")
-        else:
-            _empty_state()
+        _empty_state()
 
 
 def _webcam_mode() -> None:
@@ -667,6 +666,20 @@ def _available_labels() -> list[Path]:
         return []
 
     return sorted(LABEL_DIR.glob("*.csv"), key=lambda item: item.stat().st_mtime, reverse=True)
+
+
+def _clear_previous_result_when_upload_changes(uploaded) -> None:
+    fingerprint = f"{uploaded.name}:{getattr(uploaded, 'size', 0)}"
+    if st.session_state.get("active_upload_fingerprint") == fingerprint:
+        return
+
+    st.session_state["active_upload_fingerprint"] = fingerprint
+    _clear_active_video_result()
+
+
+def _clear_active_video_result() -> None:
+    st.session_state.pop("active_log_path", None)
+    st.session_state.pop("active_video_path", None)
 
 
 def _save_uploaded_video(uploaded) -> Path:
