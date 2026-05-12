@@ -2,6 +2,8 @@
 
 Projeto de visão computacional para detectar sinais visuais de fadiga usando OpenCV, MediaPipe Face Mesh e regras temporais explicáveis.
 
+https://detectorfadiga-vevjm2wx4vz4i48dwvbdyc.streamlit.app
+
 Esta primeira versão implementa um MVP local: webcam ou vídeo, landmarks faciais, cálculo de EAR/MAR, PERCLOS em janela móvel, score de fadiga, alerta visual/sonoro e log CSV por execução.
 
 ## O problema
