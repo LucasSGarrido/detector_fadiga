@@ -1,5 +1,5 @@
-opencv-python>=4.9.0
-mediapipe==0.10.14
+opencv-python-headless>=4.9.0
+mediapipe>=0.10.35
 numpy>=1.26.0
 PyYAML>=6.0.1
 pandas>=2.2.0

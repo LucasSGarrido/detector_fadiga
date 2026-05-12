@@ -109,6 +109,19 @@ streamlit run dashboard.py
 
 O dashboard também lê o exemplo `data/samples/sample_session.csv`.
 
+## Deploy no Streamlit Cloud
+
+Use as seguintes configurações ao publicar:
+
+- Repository: `LucasSGarrido/detector_fadiga`
+- Branch: `main`
+- Main file path: `dashboard.py`
+- Python version: `3.12`
+
+O projeto usa MediaPipe e OpenCV. No Streamlit Community Cloud, escolha a versão do Python em
+**Advanced settings** antes de criar o app. Evite Python 3.14 para este projeto, porque algumas
+dependências de visão computacional ainda podem não ter distribuições compatíveis.
+
 Salve o vídeo processado com overlay:
 
 ```bash
