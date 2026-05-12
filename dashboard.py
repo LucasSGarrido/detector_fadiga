@@ -16,7 +16,7 @@ from src.evaluation import LABEL_COLUMNS, evaluate_predictions, load_labels, nor
 from src.fatigue_rules import FatigueEstimator
 from src.landmarks import MediaPipeFaceMeshDetector
 from src.pipeline import process_frame, process_video
-from src.reporting import alert_rows, latest_log, load_log, normalize_log, summarize_log
+from src.reporting import alert_rows, load_log, normalize_log, summarize_log
 from src.utils import build_fatigue_config, load_config
 
 
@@ -310,9 +310,9 @@ def _load_log_source() -> tuple[pd.DataFrame | None, Path | None, str]:
         selected = None
 
         if logs:
-            labels = {str(log.relative_to(ROOT)): log for log in logs}
-            default_index = _default_log_index(list(labels.values()))
-            selected_name = st.selectbox("Log local", list(labels.keys()), index=default_index)
+            labels = {"Nenhum": None}
+            labels.update({str(log.relative_to(ROOT)): log for log in logs})
+            selected_name = st.selectbox("Log local", list(labels.keys()))
             selected = labels[selected_name]
 
     if uploaded is not None:
@@ -321,11 +321,7 @@ def _load_log_source() -> tuple[pd.DataFrame | None, Path | None, str]:
     if selected is not None:
         return load_log(selected), selected, f"Log local: {selected}"
 
-    latest = latest_log(LOG_DIR)
-    if latest is None:
-        return None, None, ""
-
-    return load_log(latest), latest, f"Log local: {latest}"
+    return None, None, ""
 
 
 def _load_labels(inline: bool = False) -> tuple[pd.DataFrame | None, str]:
@@ -773,17 +769,6 @@ def _evaluation_source_note(log_path: Path | None) -> None:
         st.caption(f"Log avaliado: {log_path}")
     else:
         st.caption("Log avaliado: arquivo enviado manualmente.")
-
-
-def _default_log_index(paths: list[Path]) -> int:
-    active = st.session_state.get("active_log_path")
-    if not active:
-        return 0
-
-    for index, path in enumerate(paths):
-        if str(path) == active:
-            return index
-    return 0
 
 
 def _sidebar_brand() -> None:
