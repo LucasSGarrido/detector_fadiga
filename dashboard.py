@@ -952,15 +952,38 @@ def _apply_theme() -> None:
             letter-spacing: 0 !important;
         }
         [data-testid="stTooltipHoverTarget"],
-        [data-testid="stTooltipHoverTarget"] *,
         button[aria-label="Help"],
-        button[aria-label="Help"] *,
-        button[aria-label="help"],
-        button[aria-label="help"] * {
-            color: #000000 !important;
-            fill: #000000 !important;
-            stroke: #000000 !important;
+        button[aria-label="help"] {
+            width: 1rem !important;
+            height: 1rem !important;
+            min-width: 1rem !important;
+            min-height: 1rem !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: 0 !important;
+            margin-left: 0.25rem !important;
+            background: var(--salmon) !important;
+            border: 1px solid var(--salmon) !important;
+            border-radius: 999px !important;
+            color: #ffffff !important;
+            font-size: 0 !important;
+            line-height: 1 !important;
             opacity: 1 !important;
+        }
+        [data-testid="stTooltipHoverTarget"] svg,
+        button[aria-label="Help"] svg,
+        button[aria-label="help"] svg {
+            display: none !important;
+        }
+        [data-testid="stTooltipHoverTarget"]::after,
+        button[aria-label="Help"]::after,
+        button[aria-label="help"]::after {
+            content: "?" !important;
+            color: #ffffff !important;
+            font-size: 0.68rem !important;
+            font-weight: 800 !important;
+            line-height: 1 !important;
         }
         [data-baseweb="tooltip"],
         [data-baseweb="tooltip"] *,
