@@ -10,6 +10,15 @@ from src.utils import load_config
 ROOT = Path(__file__).resolve().parent
 
 
+def is_streamlit_runtime() -> bool:
+    try:
+        from streamlit.runtime.scriptrunner import get_script_run_ctx
+    except Exception:
+        return False
+
+    return get_script_run_ctx() is not None
+
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Detector de fadiga em tempo real")
     parser.add_argument("--config", default=str(ROOT / "configs" / "default.yaml"))
@@ -65,4 +74,9 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    if is_streamlit_runtime():
+        from dashboard import main as dashboard_main
+
+        dashboard_main()
+    else:
+        raise SystemExit(main())
