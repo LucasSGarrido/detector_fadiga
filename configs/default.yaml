@@ -34,4 +34,4 @@ alert:
 ui:
   show_landmarks: true
   show_fps: true
-  show_debug_panel: true
+  show_debug_panel: false

@@ -6,6 +6,7 @@ def test_load_default_config():
 
     assert config["video"]["source"] == "webcam"
     assert config["thresholds"]["ear_closed"] == 0.21
+    assert config["ui"]["show_debug_panel"] is False
 
 
 def test_build_fatigue_config_from_default():

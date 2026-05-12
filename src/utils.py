@@ -44,7 +44,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "ui": {
         "show_landmarks": True,
         "show_fps": True,
-        "show_debug_panel": True,
+        "show_debug_panel": False,
     },
 }
 

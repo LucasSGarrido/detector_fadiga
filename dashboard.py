@@ -212,6 +212,7 @@ def _sidebar_processing_config() -> dict:
     config["ui"]["show_debug_panel"] = st.sidebar.toggle(
         "Painel técnico",
         value=bool(config["ui"]["show_debug_panel"]),
+        help="Mostra métricas compactas no rodapé do vídeo, sem cobrir o rosto.",
     )
     config["video"]["preserve_aspect_ratio"] = st.sidebar.toggle(
         "Manter proporção",
